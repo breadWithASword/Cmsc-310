@@ -4,3 +4,5 @@
 gcc -nostdlib -no-pie printHello.s -o hello
 ## run
 ./hello
+## Note for grader
+please be sure your console is in "/workspaces/Cmsc-310/Lab2" before running
