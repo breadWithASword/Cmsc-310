@@ -1,6 +1,6 @@
 # Cmsc-310
 # lab1
 ## compile
-gcc -nostdlib -no-pie lab1.s -o lab1
+gcc -nostdlib -no-pie printHello.s -o hello
 ## run
-./lab1
+./hello
