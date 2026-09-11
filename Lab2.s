@@ -12,5 +12,5 @@ _start:
     syscall
 
     mov $60, %rax   # exit
-    mov $0, %rdi    # status
-    syscall
+mov $0, %rdi    # status
+syscall
