@@ -12,8 +12,8 @@
 .lcomm strx, 225    # reserving 2 225 char variables to store user inputs
 .lcomm stry, 225
 dist: .int, 0
-.lcomm binx, 8      # stores the binary version of each character
-.lcomm biny, 8
+binx: .ascii "00000000\n"      # stores the binary version of each character
+biny: .ascii "00000000\n"
 
 
 .section .text
@@ -50,14 +50,44 @@ _start:
     syscall
     movq %rax, %r9         # saves length of stry
 
-
-_xgreater:
-
-
-_ygreater:
-
+    movb $1, %r15
+    cmpl %r8, %r9
+    jge _ygreater
+    jl _xgreater
 
 
+
+xgreater:
+    leaq strx(%rip), %rsi
+    movb %r15(%rsi), %al
+    leaq stry(%rip), %rsi
+    movb %r15(%rsi), %bl
+    inc %r15
+    cmp %r15, %r9
+    
+    jmp convert_loop
+
+ygreater:
+
+convert_loop:
+    mov r8b, 8
+    shl cl, 1
+    jc set_one
+    jmp next_bit
+    
+
+set_one:
+    # If carry is 1, store ASCII '1' (0x31)
+    mov byte ptr [rdi], '1'
+
+next_bit:
+    inc rdi         # Move to the next character in the buffer
+    dec r8b         # Decrease bit counter
+    jnz convert_loop  # Repeat for all 8 bits
+
+    cmpl %r8, %r9
+    jge _ygreater
+    jl _xgreater
 
 
 
