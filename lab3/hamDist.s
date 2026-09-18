@@ -51,6 +51,13 @@ _start:
     movq %rax, %r9         # saves length of stry
 
 
+_xgreater:
+
+
+_ygreater:
+
+
+
 
 
 
