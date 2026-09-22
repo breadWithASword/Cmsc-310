@@ -9,8 +9,8 @@
 
 
 .section .bss
-.lcomm strx, 225    # reserving 2 225 char variables to store user inputs
-.lcomm stry, 225
+.lcomm str1, 225    # reserving 2 225 char variables to store user inputs
+.lcomm str2, 225
 dist: .int, 0
 binx: .ascii "00000000\n"      # stores the binary version of each character
 biny: .ascii "00000000\n"
@@ -29,10 +29,10 @@ _start:
     # takes user input for string 1
     movq $0, %rax           # set syscall to read
     movq $0, %rdi           # set syscall to input
-    movq $strx, %rsi        # points to stry
+    movq $str1, %rsi        # points to str1
     movq $255, %rdx         # max bytes to read
     syscall
-    movq %rax, %r8         # saves length of strx
+    movq %rax, %r8         # saves length of str1
 
 
     # asks for string 2
@@ -45,29 +45,36 @@ _start:
     # takes user input for string 2
     movq $0, %rax           # set syscall to read
     movq $0, %rdi           # set syscall to input
-    movq $stry, %rsi        # points to stry
+    movq $str2, %rsi        # points to str2
     movq $255, %rdx         # max bytes to read
     syscall
-    movq %rax, %r9         # saves length of stry
+    movq %rax, %r9         # saves length of str2
+
 
     movb $1, %r15
     cmpl %r8, %r9
-    jge _ygreater
-    jl _xgreater
+    jge _2greater
+    jl _1greater
 
 
 
-xgreater:
-    leaq strx(%rip), %rsi
+1greater:
+    
+
+2greater:
+    a
+
+
+# gets the next character of each string
+get_char:
+    leaq str1(%rip), %rsi
     movb %r15(%rsi), %al
-    leaq stry(%rip), %rsi
+    leaq str2(%rip), %rsi
     movb %r15(%rsi), %bl
     inc %r15
     cmp %r15, %r9
     
     jmp convert_loop
-
-ygreater:
 
 convert_loop:
     mov r8b, 8
