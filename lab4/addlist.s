@@ -1,20 +1,21 @@
+
 .section .text
-.global .sum
+.global sum
 
 # %rdi = array[0]
 # %rsi = count
 sum:
-    xor %eax, $0  # hold total
-    xor %r8, $0  # loop counter
+    mov $0, %eax  # hold total
 
 loop_start:
-    cmp $rsi, $r8   # checks if the loop counter has reached the max value 
-    jge loop_end
+     
+    add (%rdi), %eax
 
-    add %eax, %rdi+%r8
+    add $4, %rdi
+    
+    dec %rsi
+    jne loop_start
+    ret
 
-    inc %r8
-    jmp loop_start
 
-loop_end:
-    ret %eax
+.section .note.GNU-stack,"",@progbits
