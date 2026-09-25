@@ -11,9 +11,6 @@
 .section .bss
 .lcomm str1, 225    # reserving 2 225 char variables to store user inputs
 .lcomm str2, 225
-dist: .int, 0
-binx: .ascii "00000000\n"      # stores the binary version of each character
-biny: .ascii "00000000\n"
 
 
 .section .text
@@ -51,50 +48,45 @@ _start:
     movq %rax, %r9         # saves length of str2
 
 
-    movb $1, %r15
-    cmpl %r8, %r9
-    jge _2greater
-    jl _1greater
+    movb $0, %r15   # acts as loop counter for get_char
+    movb $0, %r14   # stores distance value
+
+    leaq str1(%rip), %rsi   # makes %rsi point to string 1
+    leaq str2(%rip), %rdi   # makes %rdi point to string 2
+
+    cmpl %r8, %r9   # compare size of 1 to size of 2
+    jge get_char    # bypasses 2_less if 2 is >=
 
 
-
-1greater:
-    
-
-2greater:
-    a
+2_less: # sets r8 to the value of r9 if r9 is less
+    mov %r9, %r8
 
 
 # gets the next character of each string
 get_char:
-    leaq str1(%rip), %rsi
-    movb %r15(%rsi), %al
-    leaq str2(%rip), %rsi
-    movb %r15(%rsi), %bl
-    inc %r15
-    cmp %r15, %r9
-    
-    jmp convert_loop
+    cmp %r15, %r8       # checks if the end of the shortest string has been reached
+    jge output_dist
 
-convert_loop:
-    mov r8b, 8
-    shl cl, 1
-    jc set_one
-    jmp next_bit
+    mov (%rsi), %r11    # puts char from 1 into %r11
+    mov (%rsi), %r12    # puts char from 2 into %r12
+
+    xor %r12, %r11      # gets difference & places it in %r11
+
+    mov $8, %rcx        # loop vaule for count_loop
+    inc %r15
+
+
+count_loop:
+    rol     $1, %r11                 # Rotate left to test highest bit into Carry Flag
+    jc      set_one                 # If carry flag is set, bit is '1'
+    dec %rcx
+    jnz count_loop
+    jmp get_char
     
 
 set_one:
-    # If carry is 1, store ASCII '1' (0x31)
-    mov byte ptr [rdi], '1'
+    inc %r14
 
-next_bit:
-    inc rdi         # Move to the next character in the buffer
-    dec r8b         # Decrease bit counter
-    jnz convert_loop  # Repeat for all 8 bits
-
-    cmpl %r8, %r9
-    jge _ygreater
-    jl _xgreater
 
 
 
