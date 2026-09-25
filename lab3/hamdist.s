@@ -70,17 +70,19 @@ r9_less: # sets r8 to the value of r9 if r9 is less
 
 
 # gets the next character of each string
-get_char:
+get_char: 
     cmp %r15, %r8       # checks if the end of the shortest string has been reached
-    jle endfunc
+    jge endfunc
 
     mov (%rsi), %r11    # puts char from 1 into %r11
-    mov (%rsi), %r12    # puts char from 2 into %r12
+    mov (%rdi), %r12    # puts char from 2 into %r12
 
-    xor %r12, %r11      # gets difference & places it in %r11
+    xor %r12, %r11      # gets distance & places it in %r11
 
     mov $8, %rcx        # loop vaule for count_loop
     inc %r15
+
+    
 
 
 count_loop:
@@ -92,6 +94,13 @@ count_loop:
     
 
 set_one:
+
+    movq $1, %rax           # set syscall to write
+    movq $1, %rdi           # set syscall to output
+    movq $test, %rsi      # move ask2 to a usable point
+    movq $test_len, %rdx  # set length of ask2
+    syscall
+
     mov $1, %bl
 
 
