@@ -7,6 +7,13 @@
         .ascii "Enter string 2: \n"
     ask2_len = . - ask2
 
+    test:
+        .ascii "I'm working \n"
+    test_len = . - test
+
+    output:
+        .ascii " "
+
 
 .section .bss
 .lcomm str1, 225    # reserving 2 225 char variables to store user inputs
@@ -48,24 +55,24 @@ _start:
     movq %rax, %r9         # saves length of str2
 
 
-    movb $0, %r15   # acts as loop counter for get_char
-    movb $0, %r14   # stores distance value
+    mov $0, %r15   # acts as loop counter for get_char
+    mov $0, %r14   # stores distance value
 
     leaq str1(%rip), %rsi   # makes %rsi point to string 1
     leaq str2(%rip), %rdi   # makes %rdi point to string 2
 
-    cmpl %r8, %r9   # compare size of 1 to size of 2
+    cmp %r8, %r9   # compare size of 1 to size of 2
     jge get_char    # bypasses 2_less if 2 is >=
 
 
-2_less: # sets r8 to the value of r9 if r9 is less
+r9_less: # sets r8 to the value of r9 if r9 is less
     mov %r9, %r8
 
 
 # gets the next character of each string
 get_char:
     cmp %r15, %r8       # checks if the end of the shortest string has been reached
-    jge output_dist
+    jle endfunc
 
     mov (%rsi), %r11    # puts char from 1 into %r11
     mov (%rsi), %r12    # puts char from 2 into %r12
@@ -77,19 +84,32 @@ get_char:
 
 
 count_loop:
-    rol     $1, %r11                 # Rotate left to test highest bit into Carry Flag
-    jc      set_one                 # If carry flag is set, bit is '1'
-    dec %rcx
-    jnz count_loop
-    jmp get_char
+    rol $1, %r11    # Rotate left to test highest bit into Carry Flag
+    mov %r11, %r12 
+    jc set_one     # If carry flag is set, bit is 1
+    mov $0, %bl
+    jmp out_bit
     
 
 set_one:
-    inc %r14
+    mov $1, %bl
 
 
+out_bit:
+    mov     %bl, output(%rip)      # Move character into output buffer
 
+    mov     $1, %rax                # RAX = 1 (write)
+    mov     $1, %rdi                # RDI = 1 (stdout)
+    lea     output(%rip), %rsi     # RSI = pointer to character
+    mov     $1, %rdx                # RDX = length (1 byte)
+    syscall
 
-mov $60, %rax   # tells the program to end the function
-mov $0, %rdi    # rdi(0) = ended successfully
-syscall
+    dec %rcx            # loop back to count_loop if rcx > 0
+    jnz count_loop
+
+    jmp get_char
+
+endfunc:
+    mov $60, %rax   # tells the program to end the function
+    mov $0, %rdi    # rdi(0) = ended successfully
+    syscall
