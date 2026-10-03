@@ -16,9 +16,9 @@ Array_length:
 .global ram
 .lcomm ram, 256
 
-.global main
+.global _main
 .section .text
-main:
+_main:
     leaq Numbers(%rip), %rbx
     mov $2, %rcx
 
@@ -28,7 +28,7 @@ main:
 
 _comploop:
     mov (%rbx, %rcx, 4), %r10
-    cmp %r10, %r9
+    cmp %r9, %r10
     jg _replace
 
     inc %rcx
@@ -44,17 +44,7 @@ _replace:
     jg _end
     jmp _comploop
 
-
 _end:
     mov %r9, ram+0x50
-
-    mov $1, %rax                # RAX = 1 (write)
-    mov $1, %rdi                # RDI = 1 (stdout)
-    lea ram+0x50, %rsi               # RSI = pointer to character
-    mov $256, %rdx                # RDX = length (1 byte)
-    syscall
-
-
-    mov $60, %rax   # tells the program to end the function
-    mov $0, %rdi    # rdi(0) = ended successfully
-    syscall
+    ret
+.section .note.GNU-stack,"",@progbits
