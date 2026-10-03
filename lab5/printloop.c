@@ -3,6 +3,6 @@ extern unsigned char ram[];
 extern void _main(void);
 int main() {
     _main();
-    printf("%d\n", ram[0x50]);
+    printf("%02X\n", ram[0x50]);
     return 0;
 }

@@ -6,45 +6,40 @@ Numbers:
     .long 2
     .long 7
     .long 9
-    .long 23
-    .long 7
+    .long 23 
+    .long 7     
     .long 3
-    .long 11
+    .long 11    
 Array_length:
     .long 10
 
-.global ram
-.lcomm ram, 256
+.section .bss
+    .global ram
+    .lcomm ram, 256     # reserves 256gb of ram
 
 .global _main
 .section .text
 _main:
-    leaq Numbers(%rip), %rbx
-    mov $2, %rcx
+    movq Array_length, %rcx
+    dec %rcx
 
-    mov Array_length, %r15
-
-    mov (%rbx,4), %r9
+    mov Numbers(, %rcx, 4), %al
 
 _comploop:
-    mov (%rbx, %rcx, 4), %r10
-    cmp %r9, %r10
-    jg _replace
+    dec %rcx
+    jz _end
 
-    inc %rcx
-    cmp $10, %rcx
-    jg _end
+    mov Numbers(, %rcx, 4), %bl
+    cmp %bl, %al
+    jl _replace
+
     jmp _comploop
 
 _replace:
-    mov %r10, %r9
-
-    inc %rcx
-    cmp $10, %rcx
-    jg _end
+    mov %bl, %al
     jmp _comploop
 
 _end:
-    mov %r9, ram+0x50
+    mov %al, ram+0x50   # this part works
     ret
 .section .note.GNU-stack,"",@progbits
