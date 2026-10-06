@@ -4,7 +4,7 @@
 	.p2align 4
 	.globl	main
 	.type	main, @function
-main:
+main:		# start of int main()
 .LFB23:
 	.cfi_startproc
 	endbr64

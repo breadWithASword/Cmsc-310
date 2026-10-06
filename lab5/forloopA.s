@@ -5,29 +5,29 @@
 	.align 4
 	.type	a, @object
 	.size	a, 4
-a:
+a:					# represents int a = 1;
 	.long	1
 	.globl	c
 	.type	c, @object
 	.size	c, 1
-c:
+c:					# represents char c = 'a';
 	.byte	97
 	.globl	f
 	.align 4
 	.type	f, @object
 	.size	f, 4
-f:
+f:					# represents float f = 1.23456;
 	.long	1067320848
 	.globl	string
 	.align 16
 	.type	string, @object
 	.size	string, 22
-string:
+string:				# represents char string[] = "the bear ate the grub";
 	.string	"the bear ate the grub"
 	.text
 	.globl	main
 	.type	main, @function
-main:
+main:				# this is where int main() starts
 .LFB0:
 	.cfi_startproc
 	endbr64
@@ -35,14 +35,14 @@ main:
 	.cfi_def_cfa_offset 16
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
-	.cfi_def_cfa_register 6
+	.cfi_def_cfa_register 6		# begining of for loop, sets i = 0
 	movl	$0, -4(%rbp)
 	jmp	.L2
-.L3:
+.L3:	# the function part of the for loop, makes int a = a
 	movl	a(%rip), %eax
 	movl	%eax, a(%rip)
-	addl	$1, -4(%rbp)
-.L2:
+	addl	$1, -4(%rbp)	# i++, then goes back to comparison step
+.L2:	# comparison part of for loop, checks i < 10
 	cmpl	$9, -4(%rbp)
 	jle	.L3
 	movl	$0, %eax
